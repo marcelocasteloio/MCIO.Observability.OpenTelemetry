@@ -1,4 +1,4 @@
-# MCIO.Core
+# MCIO.Observability.OpenTelemetry
 
 [EM BRANCO]
 
@@ -13,7 +13,7 @@
 
 | Nome | Versão | Link | Repository |
 | :- | :- | :- | :- |
-| MarceloCastelo.IO.Core |  ![Nuget](https://img.shields.io/nuget/v/MarceloCastelo.IO.Core) | [Nuget.org](https://www.nuget.org/packages/MarceloCastelo.IO.Core/) | Esse aqui :) |
+| MarceloCastelo.IO.Observability.OpenTelemetry |  ![Nuget](https://img.shields.io/nuget/v/MarceloCastelo.IO.Observability.OpenTelemetry) | [Nuget.org](https://www.nuget.org/packages/MarceloCastelo.IO.Observability.OpenTelemetry/) | Esse aqui :) |
 
 
 ## :label: Labels
@@ -21,25 +21,25 @@
 | Categoria | Descrição | Labels (todos os ícones são clicáveis e levam as ferramentas externas) |
 |-|-|-|
 | Licença | MIT | [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/) |
-| Segurança | Vulnerabilidades | [![CodeQL](https://github.com/marcelocasteloio/MCIO.Core/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/marcelocasteloio/MCIO.Core/actions/workflows/github-code-scanning/codeql) [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Core&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Core) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Core&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Core) |
-| Qualidade | Visão geral | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Core&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Core) |
-| Qualidade | Cobertura de testes | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Core&metric=coverage)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Core) |
-| Qualidade | Teste de mutação | [![Mutation Test](https://github.com/marcelocasteloio/MCIO.Core/actions/workflows/mutation-test.yml/badge.svg)](https://github.com/marcelocasteloio/MCIO.Core/actions/workflows/mutation-test.yml) |
-| Qualidade | Manutenabilidade | [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Core&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Core) |
-| Qualidade | Confiabilidade | [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Core&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Core) |
-| Qualidade | Bugs | [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Core&metric=bugs)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Core) |
-| Qualidade | Dívidas técnicas | [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Core&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Core) |
-| Qualidade | Linhas duplicadas (%) | [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Core&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Core) |
-| Qualidade | Melhorias de código | [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Core&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Core) |
-| Pipeline | Compilação e testes | [![Build and Test](https://github.com/marcelocasteloio/MCIO.Core/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/marcelocasteloio/MCIO.Core/actions/workflows/build-and-test.yml) |
-| Pipeline | Publicação | [![Publish](https://github.com/marcelocasteloio/MCIO.Core/actions/workflows/publish.yml/badge.svg)](https://github.com/marcelocasteloio/MCIO.Core/actions/workflows/publish.yml) |
+| Segurança | Vulnerabilidades | [![CodeQL](https://github.com/marcelocasteloio/MCIO.Observability.OpenTelemetry/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/marcelocasteloio/MCIO.Observability.OpenTelemetry/actions/workflows/github-code-scanning/codeql) [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Observability.OpenTelemetry&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Observability.OpenTelemetry) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Observability.OpenTelemetry&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Observability.OpenTelemetry) |
+| Qualidade | Visão geral | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Observability.OpenTelemetry&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Observability.OpenTelemetry) |
+| Qualidade | Cobertura de testes | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Observability.OpenTelemetry&metric=coverage)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Observability.OpenTelemetry) |
+| Qualidade | Teste de mutação | [![Mutation Test](https://github.com/marcelocasteloio/MCIO.Observability.OpenTelemetry/actions/workflows/mutation-test.yml/badge.svg)](https://github.com/marcelocasteloio/MCIO.Observability.OpenTelemetry/actions/workflows/mutation-test.yml) |
+| Qualidade | Manutenabilidade | [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Observability.OpenTelemetry&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Observability.OpenTelemetry) |
+| Qualidade | Confiabilidade | [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Observability.OpenTelemetry&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Observability.OpenTelemetry) |
+| Qualidade | Bugs | [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Observability.OpenTelemetry&metric=bugs)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Observability.OpenTelemetry) |
+| Qualidade | Dívidas técnicas | [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Observability.OpenTelemetry&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Observability.OpenTelemetry) |
+| Qualidade | Linhas duplicadas (%) | [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Observability.OpenTelemetry&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Observability.OpenTelemetry) |
+| Qualidade | Melhorias de código | [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=marcelocasteloio_MCIO.Observability.OpenTelemetry&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=marcelocasteloio_MCIO.Observability.OpenTelemetry) |
+| Pipeline | Compilação e testes | [![Build and Test](https://github.com/marcelocasteloio/MCIO.Observability.OpenTelemetry/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/marcelocasteloio/MCIO.Observability.OpenTelemetry/actions/workflows/build-and-test.yml) |
+| Pipeline | Publicação | [![Publish](https://github.com/marcelocasteloio/MCIO.Observability.OpenTelemetry/actions/workflows/publish.yml/badge.svg)](https://github.com/marcelocasteloio/MCIO.Observability.OpenTelemetry/actions/workflows/publish.yml) |
 
 ## :page_facing_up: Introdução
 
 [EM BRANCO]
 
 ## :book: Conteúdo
-- [MCIO.Core](#mciocore)
+- [MCIO.Observability.OpenTelemetry](#mciocore)
   - [:book: Documentos](#book-documentos)
   - [:package: Pacotes](#package-pacotes)
   - [:label: Labels](#label-labels)
