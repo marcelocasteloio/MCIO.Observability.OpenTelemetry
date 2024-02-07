@@ -19,4 +19,9 @@
 		<None Include="..\..\images\icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="MarceloCastelo.IO.Observability.Abstractions" Version="1.0.0" />
+	  <PackageReference Include="OpenTelemetry" Version="1.7.0" />
+	</ItemGroup>
+
 </Project>
