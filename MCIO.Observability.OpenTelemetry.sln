@@ -1,0 +1,86 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B6676007-0B30-4AAC-81B7-DA89B08AF3CD}"
+	ProjectSection(SolutionItems) = preProject
+		build-local-script.ps1 = build-local-script.ps1
+		clear-local-script.ps1 = clear-local-script.ps1
+		images\icon.png = images\icon.png
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - src", "1 - src", "{60184BD8-3758-42D3-8259-20EE05D6F584}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - tst", "2 - tst", "{7E83A29E-60D9-4768-B3C4-A3582BDC8BFF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - benchs", "3 - benchs", "{F21ED463-D5A8-4012-A3B3-05B2F3627A97}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - samples", "4 - samples", "{1339AC2A-8EE0-475D-A11C-D65B784CABC3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCIO.Observability.OpenTelemetry", "src\Observability.OpenTelemetry\MCIO.Observability.OpenTelemetry.csproj", "{3A518EA0-8C53-4C61-B828-DCBEF87975A4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCIO.Observability.OpenTelemetry.UnitTests", "tst\UnitTests\MCIO.Observability.OpenTelemetry.UnitTests.csproj", "{572591EB-D82F-470B-A1B7-F6EB36DF78B0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCIO.Observability.OpenTelemetry.Benchmarks", "benchs\Benchmarks\MCIO.Observability.OpenTelemetry.Benchmarks.csproj", "{1B1FE462-1DCF-4A3B-9934-0F41B1D044C8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCIO.Observability.OpenTelemetry.Samples.Gateway", "samples\Samples.Gateway\MCIO.Observability.OpenTelemetry.Samples.Gateway.csproj", "{D45887BB-E568-4359-A928-6C5C4B7F0CCC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCIO.Observability.OpenTelemetry.Samples.ServiceA", "samples\Samples.ServiceA\MCIO.Observability.OpenTelemetry.Samples.ServiceA.csproj", "{83EC5150-B6DE-4444-8A33-AE370767A166}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCIO.Observability.OpenTelemetry.Samples.ServiceB", "samples\Samples.ServiceB\MCIO.Observability.OpenTelemetry.Samples.ServiceB.csproj", "{165E0EC3-F6F2-4B01-A2C1-8446C16E9326}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCIO.Observability.OpenTelemetry.Samples.Worker", "samples\Samples.Worker\MCIO.Observability.OpenTelemetry.Samples.Worker.csproj", "{8DCDC9CB-E1D7-4DFF-B84E-AF5385C7A671}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3A518EA0-8C53-4C61-B828-DCBEF87975A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A518EA0-8C53-4C61-B828-DCBEF87975A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A518EA0-8C53-4C61-B828-DCBEF87975A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A518EA0-8C53-4C61-B828-DCBEF87975A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{572591EB-D82F-470B-A1B7-F6EB36DF78B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{572591EB-D82F-470B-A1B7-F6EB36DF78B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{572591EB-D82F-470B-A1B7-F6EB36DF78B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{572591EB-D82F-470B-A1B7-F6EB36DF78B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B1FE462-1DCF-4A3B-9934-0F41B1D044C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B1FE462-1DCF-4A3B-9934-0F41B1D044C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B1FE462-1DCF-4A3B-9934-0F41B1D044C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B1FE462-1DCF-4A3B-9934-0F41B1D044C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D45887BB-E568-4359-A928-6C5C4B7F0CCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D45887BB-E568-4359-A928-6C5C4B7F0CCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D45887BB-E568-4359-A928-6C5C4B7F0CCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D45887BB-E568-4359-A928-6C5C4B7F0CCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83EC5150-B6DE-4444-8A33-AE370767A166}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83EC5150-B6DE-4444-8A33-AE370767A166}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83EC5150-B6DE-4444-8A33-AE370767A166}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83EC5150-B6DE-4444-8A33-AE370767A166}.Release|Any CPU.Build.0 = Release|Any CPU
+		{165E0EC3-F6F2-4B01-A2C1-8446C16E9326}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{165E0EC3-F6F2-4B01-A2C1-8446C16E9326}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{165E0EC3-F6F2-4B01-A2C1-8446C16E9326}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{165E0EC3-F6F2-4B01-A2C1-8446C16E9326}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DCDC9CB-E1D7-4DFF-B84E-AF5385C7A671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DCDC9CB-E1D7-4DFF-B84E-AF5385C7A671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DCDC9CB-E1D7-4DFF-B84E-AF5385C7A671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DCDC9CB-E1D7-4DFF-B84E-AF5385C7A671}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3A518EA0-8C53-4C61-B828-DCBEF87975A4} = {60184BD8-3758-42D3-8259-20EE05D6F584}
+		{572591EB-D82F-470B-A1B7-F6EB36DF78B0} = {7E83A29E-60D9-4768-B3C4-A3582BDC8BFF}
+		{1B1FE462-1DCF-4A3B-9934-0F41B1D044C8} = {F21ED463-D5A8-4012-A3B3-05B2F3627A97}
+		{D45887BB-E568-4359-A928-6C5C4B7F0CCC} = {1339AC2A-8EE0-475D-A11C-D65B784CABC3}
+		{83EC5150-B6DE-4444-8A33-AE370767A166} = {1339AC2A-8EE0-475D-A11C-D65B784CABC3}
+		{165E0EC3-F6F2-4B01-A2C1-8446C16E9326} = {1339AC2A-8EE0-475D-A11C-D65B784CABC3}
+		{8DCDC9CB-E1D7-4DFF-B84E-AF5385C7A671} = {1339AC2A-8EE0-475D-A11C-D65B784CABC3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E1473093-4EED-4D42-B4DF-CB37166AC669}
+	EndGlobalSection
+EndGlobal

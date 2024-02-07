@@ -1,0 +1,6 @@
+@MCIO.Observability.OpenTelemetry.Samples.ServiceB_HostAddress = http://localhost:5128
+
+GET {{MCIO.Observability.OpenTelemetry.Samples.ServiceB_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
