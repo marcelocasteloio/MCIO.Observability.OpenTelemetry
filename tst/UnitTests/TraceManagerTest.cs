@@ -23,6 +23,7 @@ public class TraceManagerTest
         );
     }
 
+    // StartActivity
     [Fact]
     public void TraceManager_Should_StartActivity()
     {
@@ -405,6 +406,1805 @@ public class TraceManagerTest
         }
     }
 
+    // StartInternalActivity
+    [Fact]
+    public void TraceManager_Should_StartInternalActivity()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Internal;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+
+        traceManager.StartInternalActivity(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        executionInfo.Should().Be(handlerExecutionInfo);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartInternalActivity_WithInput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Internal;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        traceManager.StartInternalActivity(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartInternalActivity_WithInputAndOutput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Internal;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = traceManager.StartInternalActivity(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+
+                return expectedOutput;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartInternalActivity_WithOutput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Internal;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = traceManager.StartInternalActivity(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+
+                return expectedOutput;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerOutput.Should().Be(expectedOutput);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartInternalActivityAsync()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Internal;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerCancellationToken = default(CancellationToken);
+
+        await traceManager.StartInternalActivityAsync(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.CompletedTask;
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        executionInfo.Should().Be(handlerExecutionInfo);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartInternalActivityAsync_WithInput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Internal;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+        var handlerCancellationToken = default(CancellationToken);
+
+        await traceManager.StartInternalActivityAsync(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.CompletedTask;
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+        handlerCancellationToken.Should().Be(cancellationToken);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartInternalActivityAsync_WithInputAndOutput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Internal;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+        var handlerCancellationToken = default(CancellationToken);
+
+        var handlerOutput = await traceManager.StartInternalActivityAsync(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input, CancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.FromResult(expectedOutput);
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+        handlerOutput.Should().Be(expectedOutput);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartInternalActivityAsync_WithOutput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Internal;
+
+        var handlerCancellationToken = default(CancellationToken);
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = await traceManager.StartInternalActivityAsync(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.FromResult(expectedOutput);
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerOutput.Should().Be(expectedOutput);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    // StartServerActivity
+    [Fact]
+    public void TraceManager_Should_StartServerActivity()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Server;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+
+        traceManager.StartServerActivity(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        executionInfo.Should().Be(handlerExecutionInfo);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartServerActivity_WithInput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Server;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        traceManager.StartServerActivity(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartServerActivity_WithInputAndOutput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Server;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = traceManager.StartServerActivity(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+
+                return expectedOutput;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartServerActivity_WithOutput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Server;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = traceManager.StartServerActivity(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+
+                return expectedOutput;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerOutput.Should().Be(expectedOutput);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartServerActivityAsync()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Server;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerCancellationToken = default(CancellationToken);
+
+        await traceManager.StartServerActivityAsync(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.CompletedTask;
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        executionInfo.Should().Be(handlerExecutionInfo);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartServerActivityAsync_WithInput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Server;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+        var handlerCancellationToken = default(CancellationToken);
+
+        await traceManager.StartServerActivityAsync(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.CompletedTask;
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+        handlerCancellationToken.Should().Be(cancellationToken);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartServerActivityAsync_WithInputAndOutput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Server;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+        var handlerCancellationToken = default(CancellationToken);
+
+        var handlerOutput = await traceManager.StartServerActivityAsync(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input, CancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.FromResult(expectedOutput);
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+        handlerOutput.Should().Be(expectedOutput);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartServerActivityAsync_WithOutput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Server;
+
+        var handlerCancellationToken = default(CancellationToken);
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = await traceManager.StartServerActivityAsync(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.FromResult(expectedOutput);
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerOutput.Should().Be(expectedOutput);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    // StartClientActivity
+    [Fact]
+    public void TraceManager_Should_StartClientActivity()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Client;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+
+        traceManager.StartClientActivity(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        executionInfo.Should().Be(handlerExecutionInfo);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartClientActivity_WithInput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Client;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        traceManager.StartClientActivity(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartClientActivity_WithInputAndOutput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Client;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = traceManager.StartClientActivity(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+
+                return expectedOutput;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartClientActivity_WithOutput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Client;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = traceManager.StartClientActivity(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+
+                return expectedOutput;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerOutput.Should().Be(expectedOutput);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartClientActivityAsync()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Client;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerCancellationToken = default(CancellationToken);
+
+        await traceManager.StartClientActivityAsync(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.CompletedTask;
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        executionInfo.Should().Be(handlerExecutionInfo);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartClientActivityAsync_WithInput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Client;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+        var handlerCancellationToken = default(CancellationToken);
+
+        await traceManager.StartClientActivityAsync(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.CompletedTask;
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+        handlerCancellationToken.Should().Be(cancellationToken);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartClientActivityAsync_WithInputAndOutput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Client;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+        var handlerCancellationToken = default(CancellationToken);
+
+        var handlerOutput = await traceManager.StartClientActivityAsync(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input, CancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.FromResult(expectedOutput);
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+        handlerOutput.Should().Be(expectedOutput);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartClientActivityAsync_WithOutput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Client;
+
+        var handlerCancellationToken = default(CancellationToken);
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = await traceManager.StartClientActivityAsync(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.FromResult(expectedOutput);
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerOutput.Should().Be(expectedOutput);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    // StartProducerActivity
+    [Fact]
+    public void TraceManager_Should_StartProducerActivity()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Producer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+
+        traceManager.StartProducerActivity(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        executionInfo.Should().Be(handlerExecutionInfo);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartProducerActivity_WithInput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Producer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        traceManager.StartProducerActivity(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartProducerActivity_WithInputAndOutput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Producer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = traceManager.StartProducerActivity(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+
+                return expectedOutput;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartProducerActivity_WithOutput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Producer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = traceManager.StartProducerActivity(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+
+                return expectedOutput;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerOutput.Should().Be(expectedOutput);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartProducerActivityAsync()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Producer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerCancellationToken = default(CancellationToken);
+
+        await traceManager.StartProducerActivityAsync(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.CompletedTask;
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        executionInfo.Should().Be(handlerExecutionInfo);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartProducerActivityAsync_WithInput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Producer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+        var handlerCancellationToken = default(CancellationToken);
+
+        await traceManager.StartProducerActivityAsync(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.CompletedTask;
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+        handlerCancellationToken.Should().Be(cancellationToken);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartProducerActivityAsync_WithInputAndOutput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Producer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+        var handlerCancellationToken = default(CancellationToken);
+
+        var handlerOutput = await traceManager.StartProducerActivityAsync(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input, CancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.FromResult(expectedOutput);
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+        handlerOutput.Should().Be(expectedOutput);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartProducerActivityAsync_WithOutput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Producer;
+
+        var handlerCancellationToken = default(CancellationToken);
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = await traceManager.StartProducerActivityAsync(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.FromResult(expectedOutput);
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerOutput.Should().Be(expectedOutput);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    // StartConsumerActivity
+    [Fact]
+    public void TraceManager_Should_StartConsumerActivity()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Consumer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+
+        traceManager.StartConsumerActivity(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        executionInfo.Should().Be(handlerExecutionInfo);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartConsumerActivity_WithInput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Consumer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        traceManager.StartConsumerActivity(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartConsumerActivity_WithInputAndOutput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Consumer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = traceManager.StartConsumerActivity(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+
+                return expectedOutput;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+    }
+
+    [Fact]
+    public void TraceManager_Should_StartConsumerActivity_WithOutput()
+    {
+        // Arrange
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Consumer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = traceManager.StartConsumerActivity(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+
+                return expectedOutput;
+            }
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerOutput.Should().Be(expectedOutput);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartConsumerActivityAsync()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Consumer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerCancellationToken = default(CancellationToken);
+
+        await traceManager.StartConsumerActivityAsync(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.CompletedTask;
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        executionInfo.Should().Be(handlerExecutionInfo);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartConsumerActivityAsync_WithInput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Consumer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+        var handlerCancellationToken = default(CancellationToken);
+
+        await traceManager.StartConsumerActivityAsync(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.CompletedTask;
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+        handlerCancellationToken.Should().Be(cancellationToken);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartConsumerActivityAsync_WithInputAndOutput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var input = Guid.NewGuid();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Consumer;
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+        var handlerCancellationToken = default(CancellationToken);
+
+        var handlerOutput = await traceManager.StartConsumerActivityAsync(
+            name,
+            executionInfo,
+            input,
+            handler: (activity, executionInfo, input, CancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerInput = input;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.FromResult(expectedOutput);
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerInput.Should().Be(input);
+        handlerOutput.Should().Be(expectedOutput);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
+
+    [Fact]
+    public async Task TraceManager_Should_StartConsumerActivityAsync_WithOutput()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var name = Guid.NewGuid().ToString();
+        var executionInfo = CreateExecutionInfo();
+        var expectedOutput = Guid.NewGuid();
+
+        var activitySource = CreateActivitySource();
+        var traceManager = new TraceManager(activitySource);
+
+        var expectedActivityStatus = Status.Ok;
+        var expectedActivityKind = ActivityKind.Consumer;
+
+        var handlerCancellationToken = default(CancellationToken);
+
+        // Act
+        var handlerActivity = default(Activity);
+        var handlerExecutionInfo = default(ExecutionInfo);
+        var handlerInput = Guid.Empty;
+
+        var handlerOutput = await traceManager.StartConsumerActivityAsync(
+            name,
+            executionInfo,
+            handler: (activity, executionInfo, cancellationToken) =>
+            {
+                handlerActivity = activity;
+                handlerExecutionInfo = executionInfo;
+                handlerCancellationToken = cancellationToken;
+
+                return Task.FromResult(expectedOutput);
+            },
+            cancellationToken
+        );
+
+        // Assert
+        handlerActivity.Should().NotBeNull();
+        handlerActivity!.Source.Should().Be(activitySource);
+        handlerActivity!.OperationName.Should().Be(name);
+        handlerActivity!.Kind.Should().Be(expectedActivityKind);
+        ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+        handlerExecutionInfo.Should().Be(executionInfo);
+        handlerOutput.Should().Be(expectedOutput);
+        handlerCancellationToken.Should().Be(cancellationToken);
+    }
 
     // Private Methods
     private static ActivitySource CreateActivitySource()
@@ -424,10 +2224,10 @@ public class TraceManagerTest
     {
         var tagCollection = activity.TagObjects.ToArray();
 
-        var correlationId = (Guid?) tagCollection.FirstOrDefault(q => q.Key == TraceManager.CORRELATION_ID_TAG_NAME).Value;
+        var correlationId = (Guid?)tagCollection.FirstOrDefault(q => q.Key == TraceManager.CORRELATION_ID_TAG_NAME).Value;
         var tenantCode = (Guid?)tagCollection.FirstOrDefault(q => q.Key == TraceManager.TENANT_CODE_TAG_NAME).Value;
-        var executionUser = (string?) tagCollection.FirstOrDefault(q => q.Key == TraceManager.EXECUTION_USER_TAG_NAME).Value;
-        var origin = (string?) tagCollection.FirstOrDefault(q => q.Key == TraceManager.ORIGIN_TAG_NAME).Value;
+        var executionUser = (string?)tagCollection.FirstOrDefault(q => q.Key == TraceManager.EXECUTION_USER_TAG_NAME).Value;
+        var origin = (string?)tagCollection.FirstOrDefault(q => q.Key == TraceManager.ORIGIN_TAG_NAME).Value;
         var status = (string?)tagCollection.FirstOrDefault(q => q.Key == OTEL_STATUS_CODE_TAG_KEY).Value;
 
         return
