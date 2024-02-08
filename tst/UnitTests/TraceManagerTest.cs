@@ -63,6 +63,58 @@ public class TraceManagerTest
             executionInfo.Should().Be(handlerExecutionInfo);
         }
     }
+    [Fact]
+    public void TraceManager_Should_StartActivity_With_Throw_Exception()
+    {
+        foreach (var activityKind in Enum.GetValues<ActivityKind>())
+        {
+            // Arrange
+            var name = Guid.NewGuid().ToString();
+            var executionInfo = CreateExecutionInfo();
+
+            var activitySource = CreateActivitySource();
+            var traceManager = new TraceManager(activitySource);
+
+            var expectedActivityStatus = Status.Error;
+            var expectedException = new Exception(message: Guid.NewGuid().ToString());
+
+            // Act
+            var handlerActivity = default(Activity);
+            var handlerExecutionInfo = default(ExecutionInfo);
+            var exceptionThrown = default(Exception);
+
+            try
+            {
+                traceManager.StartActivity(
+                        name,
+                        activityKind,
+                        executionInfo,
+                        handler: (activity, executionInfo) =>
+                        {
+                            handlerActivity = activity;
+                            handlerExecutionInfo = executionInfo;
+
+                            throw expectedException;
+                        }
+                    );
+            }
+            catch (Exception ex)
+            {
+                exceptionThrown = ex;
+            }
+
+            // Assert
+            handlerActivity.Should().NotBeNull();
+            handlerActivity!.Source.Should().Be(activitySource);
+            handlerActivity!.OperationName.Should().Be(name);
+            handlerActivity!.Kind.Should().Be(activityKind);
+
+            ValidateActivityTagsFromException(handlerActivity, executionInfo, expectedActivityStatus, exceptionThrown).Should().BeTrue();
+            exceptionThrown.Should().Be(expectedException);
+
+            executionInfo.Should().Be(handlerExecutionInfo);
+        }
+    }
 
     [Fact]
     public void TraceManager_Should_StartActivity_WithInput()
@@ -103,6 +155,64 @@ public class TraceManagerTest
             handlerActivity!.OperationName.Should().Be(name);
             handlerActivity!.Kind.Should().Be(activityKind);
             ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+            handlerExecutionInfo.Should().Be(executionInfo);
+            handlerInput.Should().Be(input);
+        }
+    }
+    [Fact]
+    public void TraceManager_Should_StartActivity_WithInput_And_Throw_Exception()
+    {
+        foreach (var activityKind in Enum.GetValues<ActivityKind>())
+        {
+            // Arrange
+            var name = Guid.NewGuid().ToString();
+            var executionInfo = CreateExecutionInfo();
+            var input = Guid.NewGuid();
+
+            var activitySource = CreateActivitySource();
+            var traceManager = new TraceManager(activitySource);
+
+            var expectedActivityStatus = Status.Error;
+            var expectedException = new Exception(message: Guid.NewGuid().ToString());
+
+            var exceptionThrown = default(Exception);
+
+            // Act
+            var handlerActivity = default(Activity);
+            var handlerExecutionInfo = default(ExecutionInfo);
+            var handlerInput = Guid.Empty;
+
+            try
+            {
+                traceManager.StartActivity(
+                    name,
+                    activityKind,
+                    executionInfo,
+                    input,
+                    handler: (activity, executionInfo, input) =>
+                    {
+                        handlerActivity = activity;
+                        handlerExecutionInfo = executionInfo;
+                        handlerInput = input;
+
+                        throw expectedException;
+                    }
+                );
+            }
+            catch (Exception ex)
+            {
+                exceptionThrown = ex;
+            }
+
+            // Assert
+            handlerActivity.Should().NotBeNull();
+            handlerActivity!.Source.Should().Be(activitySource);
+            handlerActivity!.OperationName.Should().Be(name);
+            handlerActivity!.Kind.Should().Be(activityKind);
+
+            ValidateActivityTagsFromException(handlerActivity, executionInfo, expectedActivityStatus, exceptionThrown).Should().BeTrue();
+            exceptionThrown.Should().Be(expectedException);
 
             handlerExecutionInfo.Should().Be(executionInfo);
             handlerInput.Should().Be(input);
@@ -2236,5 +2346,18 @@ public class TraceManagerTest
             && executionInfo.ExecutionUser == executionUser
             && executionInfo.Origin == origin
             && string.Compare(status, expectedActivityStatus.StatusCode.ToString(), ignoreCase: true) == 0;
+    }
+    private static bool ValidateActivityTagsFromException(Activity activity, ExecutionInfo executionInfo, Status expectedActivityStatus, Exception? exception)
+    {
+        var tagDictionary = activity.Events.First().Tags.ToDictionary()!;
+
+        if (tagDictionary is null)
+            return false;
+
+        return
+            tagDictionary["exception.type"].ToString() == exception.GetType().ToString()
+            && tagDictionary["exception.stacktrace"] is not null
+            && tagDictionary["exception.message"].ToString() == exception.Message
+            && ValidateActivityTags(activity, executionInfo, expectedActivityStatus);
     }
 }
