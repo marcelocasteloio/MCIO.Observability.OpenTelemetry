@@ -2351,13 +2351,13 @@ public class TraceManagerTest
     {
         var tagDictionary = activity.Events.First().Tags.ToDictionary()!;
 
-        if (tagDictionary is null)
+        if (tagDictionary is null || exception is null)
             return false;
 
         return
-            tagDictionary["exception.type"].ToString() == exception.GetType().ToString()
+            tagDictionary["exception.type"]!.ToString() == exception.GetType().ToString()
             && tagDictionary["exception.stacktrace"] is not null
-            && tagDictionary["exception.message"].ToString() == exception.Message
+            && tagDictionary["exception.message"]!.ToString() == exception.Message
             && ValidateActivityTags(activity, executionInfo, expectedActivityStatus);
     }
 }
