@@ -252,6 +252,7 @@ namespace MCIO.Observability.OpenTelemetry
         {
             var activity = activitySource.StartActivity(name, kind);
 
+            // Stryker disable once all
             ActivityCannotbeNullException.ThrowIfActivityIsNull(activity, activitySource, name, kind);
 
             return activity;
