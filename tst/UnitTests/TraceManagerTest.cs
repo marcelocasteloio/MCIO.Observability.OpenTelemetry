@@ -267,6 +267,72 @@ public class TraceManagerTest
             handlerOutput.Should().Be(expectedOutput);
         }
     }
+    [Fact]
+    public void TraceManager_Should_StartActivity_WithInputAndOutput_And_Throw_Exception()
+    {
+        foreach (var activityKind in Enum.GetValues<ActivityKind>())
+        {
+            // Arrange
+            var name = Guid.NewGuid().ToString();
+            var executionInfo = CreateExecutionInfo();
+            var input = Guid.NewGuid();
+            var expectedOutput = Guid.NewGuid();
+
+            var activitySource = CreateActivitySource();
+            var traceManager = new TraceManager(activitySource);
+
+            var expectedActivityStatus = Status.Error;
+            var expectedException = new Exception(message: Guid.NewGuid().ToString());
+
+            var exceptionThrown = default(Exception);
+
+            // Act
+            var handlerActivity = default(Activity);
+            var handlerExecutionInfo = default(ExecutionInfo);
+            var handlerInput = Guid.Empty;
+
+            var handlerOutput = Guid.Empty;
+
+            try
+            {
+                handlerOutput = traceManager.StartActivity(
+                        name,
+                        activityKind,
+                        executionInfo,
+                        input,
+                        handler: (activity, executionInfo, input) =>
+                        {
+                            handlerActivity = activity;
+                            handlerExecutionInfo = executionInfo;
+                            handlerInput = input;
+
+                            throw expectedException;
+
+#pragma warning disable CS0162 // Unreachable code detected
+                            return expectedOutput;
+#pragma warning restore CS0162 // Unreachable code detected
+                        }
+                    );
+            }
+            catch (Exception ex)
+            {
+                exceptionThrown = ex;
+            }
+
+            // Assert
+            handlerActivity.Should().NotBeNull();
+            handlerActivity!.Source.Should().Be(activitySource);
+            handlerActivity!.OperationName.Should().Be(name);
+            handlerActivity!.Kind.Should().Be(activityKind);
+
+            ValidateActivityTagsFromException(handlerActivity, executionInfo, expectedActivityStatus, exceptionThrown).Should().BeTrue();
+            exceptionThrown.Should().Be(expectedException);
+
+            handlerExecutionInfo.Should().Be(executionInfo);
+            handlerInput.Should().Be(input);
+            handlerOutput.Should().Be(Guid.Empty);
+        }
+    }
 
     [Fact]
     public void TraceManager_Should_StartActivity_WithOutput()
@@ -312,6 +378,68 @@ public class TraceManagerTest
             handlerOutput.Should().Be(expectedOutput);
         }
     }
+    [Fact]
+    public void TraceManager_Should_StartActivity_WithOutput_And_Throw_Exception()
+    {
+        foreach (var activityKind in Enum.GetValues<ActivityKind>())
+        {
+            // Arrange
+            var name = Guid.NewGuid().ToString();
+            var executionInfo = CreateExecutionInfo();
+            var expectedOutput = Guid.NewGuid();
+
+            var activitySource = CreateActivitySource();
+            var traceManager = new TraceManager(activitySource);
+
+            var expectedActivityStatus = Status.Error;
+            var expectedException = new Exception(message: Guid.NewGuid().ToString());
+
+            var exceptionThrown = default(Exception);
+
+            // Act
+            var handlerActivity = default(Activity);
+            var handlerExecutionInfo = default(ExecutionInfo);
+            var handlerInput = Guid.Empty;
+
+            var handlerOutput = Guid.Empty;
+
+            try
+            {
+                handlerOutput = traceManager.StartActivity(
+                       name,
+                       activityKind,
+                       executionInfo,
+                       handler: (activity, executionInfo) =>
+                       {
+                           handlerActivity = activity;
+                           handlerExecutionInfo = executionInfo;
+
+                           throw expectedException;
+
+#pragma warning disable CS0162 // Unreachable code detected
+                           return expectedOutput;
+#pragma warning restore CS0162 // Unreachable code detected
+                       }
+                   );
+            }
+            catch (Exception ex)
+            {
+                exceptionThrown = ex;
+            }
+
+            // Assert
+            handlerActivity.Should().NotBeNull();
+            handlerActivity!.Source.Should().Be(activitySource);
+            handlerActivity!.OperationName.Should().Be(name);
+            handlerActivity!.Kind.Should().Be(activityKind);
+
+            ValidateActivityTagsFromException(handlerActivity, executionInfo, expectedActivityStatus, exceptionThrown).Should().BeTrue();
+            exceptionThrown.Should().Be(expectedException);
+
+            handlerExecutionInfo.Should().Be(executionInfo);
+            handlerOutput.Should().Be(Guid.Empty);
+        }
+    }
 
     [Fact]
     public async Task TraceManager_Should_StartActivityAsync()
@@ -354,6 +482,70 @@ public class TraceManagerTest
             handlerActivity!.OperationName.Should().Be(name);
             handlerActivity!.Kind.Should().Be(activityKind);
             ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+            executionInfo.Should().Be(handlerExecutionInfo);
+            handlerCancellationToken.Should().Be(cancellationToken);
+        }
+    }
+    [Fact]
+    public async Task TraceManager_Should_StartActivityAsync_With_Throw_Exception()
+    {
+        foreach (var activityKind in Enum.GetValues<ActivityKind>())
+        {
+            // Arrange
+            var cancellationToken = new CancellationTokenSource().Token;
+            var name = Guid.NewGuid().ToString();
+            var executionInfo = CreateExecutionInfo();
+
+            var activitySource = CreateActivitySource();
+            var traceManager = new TraceManager(activitySource);
+
+            var expectedActivityStatus = Status.Error;
+            var expectedException = new Exception(message: Guid.NewGuid().ToString());
+
+            var exceptionThrown = default(Exception);
+
+            // Act
+            var handlerActivity = default(Activity);
+            var handlerExecutionInfo = default(ExecutionInfo);
+            var handlerCancellationToken = default(CancellationToken);
+
+            try
+            {
+                await traceManager.StartActivityAsync(
+                        name,
+                        activityKind,
+                        executionInfo,
+                        handler: (activity, executionInfo, cancellationToken) =>
+                        {
+                            handlerActivity = activity;
+                            handlerExecutionInfo = executionInfo;
+                            handlerCancellationToken = cancellationToken;
+
+                            throw expectedException;
+
+#pragma warning disable CS0162 // Unreachable code detected
+                            return Task.CompletedTask;
+#pragma warning restore CS0162 // Unreachable code detected
+                        },
+                        cancellationToken
+                    );
+            }
+            catch (Exception ex)
+            {
+                exceptionThrown = ex;
+            }
+
+            // Assert
+            handlerActivity.Should().NotBeNull();
+            handlerActivity!.Source.Should().Be(activitySource);
+            handlerActivity!.OperationName.Should().Be(name);
+            handlerActivity!.Kind.Should().Be(activityKind);
+
+            ValidateActivityTagsFromException(handlerActivity, executionInfo, expectedActivityStatus, exceptionThrown).Should().BeTrue();
+            exceptionThrown.Should().Be(expectedException);
+
+            handlerExecutionInfo.Should().Be(executionInfo);
 
             executionInfo.Should().Be(handlerExecutionInfo);
             handlerCancellationToken.Should().Be(cancellationToken);
@@ -405,6 +597,75 @@ public class TraceManagerTest
             handlerActivity!.OperationName.Should().Be(name);
             handlerActivity!.Kind.Should().Be(activityKind);
             ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+            handlerExecutionInfo.Should().Be(executionInfo);
+            handlerInput.Should().Be(input);
+            handlerCancellationToken.Should().Be(cancellationToken);
+        }
+    }
+    [Fact]
+    public async Task TraceManager_Should_StartActivityAsync_WithInput_And_Throw_Exception()
+    {
+        foreach (var activityKind in Enum.GetValues<ActivityKind>())
+        {
+            // Arrange
+            var cancellationToken = new CancellationTokenSource().Token;
+            var name = Guid.NewGuid().ToString();
+            var executionInfo = CreateExecutionInfo();
+            var input = Guid.NewGuid();
+
+            var activitySource = CreateActivitySource();
+            var traceManager = new TraceManager(activitySource);
+
+            var expectedActivityStatus = Status.Error;
+            var expectedException = new Exception(message: Guid.NewGuid().ToString());
+
+            var exceptionThrown = default(Exception);
+
+            // Act
+            var handlerActivity = default(Activity);
+            var handlerExecutionInfo = default(ExecutionInfo);
+            var handlerInput = Guid.Empty;
+            var handlerCancellationToken = default(CancellationToken);
+
+            try
+            {
+                await traceManager.StartActivityAsync(
+                        name,
+                        activityKind,
+                        executionInfo,
+                        input,
+                        handler: (activity, executionInfo, input, cancellationToken) =>
+                        {
+                            handlerActivity = activity;
+                            handlerExecutionInfo = executionInfo;
+                            handlerInput = input;
+                            handlerCancellationToken = cancellationToken;
+
+                            throw expectedException;
+
+#pragma warning disable CS0162 // Unreachable code detected
+                            return Task.CompletedTask;
+#pragma warning restore CS0162 // Unreachable code detected
+                        },
+                        cancellationToken
+                    );
+            }
+            catch (Exception ex)
+            {
+                exceptionThrown = ex;
+            }
+
+            // Assert
+            handlerActivity.Should().NotBeNull();
+            handlerActivity!.Source.Should().Be(activitySource);
+            handlerActivity!.OperationName.Should().Be(name);
+            handlerActivity!.Kind.Should().Be(activityKind);
+
+            ValidateActivityTagsFromException(handlerActivity, executionInfo, expectedActivityStatus, exceptionThrown).Should().BeTrue();
+            exceptionThrown.Should().Be(expectedException);
+
+            handlerExecutionInfo.Should().Be(executionInfo);
 
             handlerExecutionInfo.Should().Be(executionInfo);
             handlerInput.Should().Be(input);
@@ -465,6 +726,77 @@ public class TraceManagerTest
             handlerCancellationToken.Should().Be(cancellationToken);
         }
     }
+    [Fact]
+    public async Task TraceManager_Should_StartActivityAsync_WithInputAndOutput_And_Throw_Exception()
+    {
+        foreach (var activityKind in Enum.GetValues<ActivityKind>())
+        {
+            // Arrange
+            var cancellationToken = new CancellationTokenSource().Token;
+            var name = Guid.NewGuid().ToString();
+            var executionInfo = CreateExecutionInfo();
+            var input = Guid.NewGuid();
+            var expectedOutput = Guid.Empty;
+
+            var activitySource = CreateActivitySource();
+            var traceManager = new TraceManager(activitySource);
+
+            var expectedActivityStatus = Status.Error;
+            var expectedException = new Exception(message: Guid.NewGuid().ToString());
+
+            var exceptionThrown = default(Exception);
+
+            // Act
+            var handlerActivity = default(Activity);
+            var handlerExecutionInfo = default(ExecutionInfo);
+            var handlerInput = Guid.Empty;
+            var handlerCancellationToken = default(CancellationToken);
+
+            var handlerOutput = Guid.Empty;
+
+            try
+            {
+                handlerOutput = await traceManager.StartActivityAsync(
+                        name,
+                        activityKind,
+                        executionInfo,
+                        input,
+                        handler: (activity, executionInfo, input, CancellationToken) =>
+                        {
+                            handlerActivity = activity;
+                            handlerExecutionInfo = executionInfo;
+                            handlerInput = input;
+                            handlerCancellationToken = cancellationToken;
+
+                            throw expectedException;
+
+#pragma warning disable CS0162 // Unreachable code detected
+                            return Task.FromResult(expectedOutput);
+#pragma warning restore CS0162 // Unreachable code detected
+                        },
+                        cancellationToken
+                    );
+            }
+            catch (Exception ex)
+            {
+                exceptionThrown = ex;
+            }
+
+            // Assert
+            handlerActivity.Should().NotBeNull();
+            handlerActivity!.Source.Should().Be(activitySource);
+            handlerActivity!.OperationName.Should().Be(name);
+            handlerActivity!.Kind.Should().Be(activityKind);
+            
+            ValidateActivityTagsFromException(handlerActivity, executionInfo, expectedActivityStatus, exceptionThrown).Should().BeTrue();
+            exceptionThrown.Should().Be(expectedException);
+
+            handlerExecutionInfo.Should().Be(executionInfo);
+            handlerInput.Should().Be(input);
+            handlerOutput.Should().Be(expectedOutput);
+            handlerCancellationToken.Should().Be(cancellationToken);
+        }
+    }
 
     [Fact]
     public async Task TraceManager_Should_StartActivityAsync_WithOutput()
@@ -509,6 +841,75 @@ public class TraceManagerTest
             handlerActivity!.OperationName.Should().Be(name);
             handlerActivity!.Kind.Should().Be(activityKind);
             ValidateActivityTags(handlerActivity, executionInfo, expectedActivityStatus).Should().BeTrue();
+
+            handlerExecutionInfo.Should().Be(executionInfo);
+            handlerOutput.Should().Be(expectedOutput);
+            handlerCancellationToken.Should().Be(cancellationToken);
+        }
+    }
+    [Fact]
+    public async Task TraceManager_Should_StartActivityAsync_WithOutput_And_Throw_Exception()
+    {
+        foreach (var activityKind in Enum.GetValues<ActivityKind>())
+        {
+            // Arrange
+            var cancellationToken = new CancellationTokenSource().Token;
+            var name = Guid.NewGuid().ToString();
+            var executionInfo = CreateExecutionInfo();
+            var expectedOutput = Guid.Empty;
+
+            var activitySource = CreateActivitySource();
+            var traceManager = new TraceManager(activitySource);
+
+            var expectedActivityStatus = Status.Error;
+            var expectedException = new Exception(message: Guid.NewGuid().ToString());
+
+            var exceptionThrown = default(Exception);
+            var handlerCancellationToken = default(CancellationToken);
+
+            // Act
+            var handlerActivity = default(Activity);
+            var handlerExecutionInfo = default(ExecutionInfo);
+            var handlerInput = Guid.Empty;
+
+            var handlerOutput = Guid.Empty;
+
+            try
+            {
+                handlerOutput = await traceManager.StartActivityAsync(
+                        name,
+                        activityKind,
+                        executionInfo,
+                        handler: (activity, executionInfo, cancellationToken) =>
+                        {
+                            handlerActivity = activity;
+                            handlerExecutionInfo = executionInfo;
+                            handlerCancellationToken = cancellationToken;
+
+                            throw expectedException;
+
+#pragma warning disable CS0162 // Unreachable code detected
+                            return Task.FromResult(expectedOutput);
+#pragma warning restore CS0162 // Unreachable code detected
+                        },
+                        cancellationToken
+                    );
+            }
+            catch (Exception ex)
+            {
+                exceptionThrown = ex;
+            }
+
+            // Assert
+            handlerActivity.Should().NotBeNull();
+            handlerActivity!.Source.Should().Be(activitySource);
+            handlerActivity!.OperationName.Should().Be(name);
+            handlerActivity!.Kind.Should().Be(activityKind);
+
+            ValidateActivityTagsFromException(handlerActivity, executionInfo, expectedActivityStatus, exceptionThrown).Should().BeTrue();
+            exceptionThrown.Should().Be(expectedException);
+
+            handlerExecutionInfo.Should().Be(executionInfo);
 
             handlerExecutionInfo.Should().Be(executionInfo);
             handlerOutput.Should().Be(expectedOutput);
