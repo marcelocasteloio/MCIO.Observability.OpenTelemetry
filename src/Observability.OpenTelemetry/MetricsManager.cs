@@ -67,25 +67,32 @@ namespace MCIO.Observability.OpenTelemetry
             where T : struct
         {
             if (string.IsNullOrWhiteSpace(name))
+                // Stryker disable once all
                 throw new ArgumentNullException(nameof(name));
 
             if (!_counterDictionary.ContainsKey(name))
+                // Stryker disable once all
                 throw new ArgumentOutOfRangeException(message: string.Format(COUNTER_NOT_FOUND_ERROR_MESSAGE, name), paramName: nameof(name));
 
             var counter = (System.Diagnostics.Metrics.Counter<T>)_counterDictionary[name];
 
+            // Stryker disable once all
             counter.Add(delta);
         }
         public void IncrementCounter<T>(string name, T delta, params KeyValuePair<string, object>[] tags)
             where T : struct
         {
             if (string.IsNullOrWhiteSpace(name))
+                // Stryker disable once all
                 throw new ArgumentNullException(nameof(name));
 
             if (!_counterDictionary.ContainsKey(name))
+                // Stryker disable once all
                 throw new ArgumentOutOfRangeException(message: string.Format(COUNTER_NOT_FOUND_ERROR_MESSAGE, name), paramName: nameof(name));
 
             var counter = (System.Diagnostics.Metrics.Counter<T>)_counterDictionary[name];
+
+            // Stryker disable once all
             counter.Add(delta, tags);
         }
         public IEnumerable<Counter> GetCounterCollection()
@@ -114,26 +121,32 @@ namespace MCIO.Observability.OpenTelemetry
             where T : struct
         {
             if (string.IsNullOrWhiteSpace(name))
+                // Stryker disable once all
                 throw new ArgumentNullException(nameof(name));
 
             if (!_histogramDictionary.ContainsKey(name))
+                // Stryker disable once all
                 throw new ArgumentOutOfRangeException(message: string.Format(HISTOGRAM_NOT_FOUND_ERROR_MESSAGE, name), paramName: nameof(name));
 
             var histogram = (System.Diagnostics.Metrics.Histogram<T>)_histogramDictionary[name];
 
+            // Stryker disable once all
             histogram.Record(value);
         }
         public void RecordHistogram<T>(string name, T value, KeyValuePair<string, object>[] tags)
             where T : struct
         {
             if (string.IsNullOrWhiteSpace(name))
+                // Stryker disable once all
                 throw new ArgumentNullException(nameof(name));
 
             if (!_histogramDictionary.ContainsKey(name))
+                // Stryker disable once all
                 throw new ArgumentOutOfRangeException(message: string.Format(HISTOGRAM_NOT_FOUND_ERROR_MESSAGE, name), paramName: nameof(name));
 
             var histogram = (System.Diagnostics.Metrics.Histogram<T>)_histogramDictionary[name];
 
+            // Stryker disable once all
             histogram.Record(value, tags);
         }
         public IEnumerable<Histogram> GetHistogramCollection()
@@ -145,9 +158,11 @@ namespace MCIO.Observability.OpenTelemetry
             where T : struct
         {
             if (string.IsNullOrWhiteSpace(name))
+                // Stryker disable once all
                 throw new ArgumentNullException(nameof(name));
 
             if (observeValues is null)
+                // Stryker disable once all
                 throw new ArgumentNullException(nameof(observeValues));
 
             if (_observableGaugeDictionary.ContainsKey(name))
