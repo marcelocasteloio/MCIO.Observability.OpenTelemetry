@@ -203,7 +203,6 @@ public class MetricsManagerTest
         exceptionThrown!.ParamName.Should().Be("name");
         exceptionThrown!.Message.Should().Contain(expectedMessage);
     }
-
     [Fact]
     public void MetricsManager_Should_Record_Histogram()
     {
@@ -248,10 +247,10 @@ public class MetricsManagerTest
 
         // Act
         var handlerCollection = new Action[] {
-            () => metricsManager.IncrementCounter(name: null, delta: 1),
-            () => metricsManager.IncrementCounter(name: Guid.NewGuid().ToString(), delta: 1),
-            () => metricsManager.IncrementCounter(name: null, delta: 1, tags),
-            () => metricsManager.IncrementCounter(name: Guid.NewGuid().ToString(), delta: 1, tags)
+            () => metricsManager.RecordHistogram(name: null, value: 1),
+            () => metricsManager.RecordHistogram(name: Guid.NewGuid().ToString(), value: 1),
+            () => metricsManager.RecordHistogram(name: null, value: 1, tags),
+            () => metricsManager.RecordHistogram(name: Guid.NewGuid().ToString(), value: 1, tags)
         };
 
         // Assert
