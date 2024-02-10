@@ -110,13 +110,20 @@ public class MetricsManagerTest
         var name = Guid.NewGuid().ToString();
         var unit = Guid.NewGuid().ToString();
         var description = Guid.NewGuid().ToString();
+        var tags = new KeyValuePair<string, object>[]
+        {
+            new(key: "A", value: 1 ),
+            new(key: "B", value: 2 ),
+        };
 
         metricsManager.CreateCounter<int>(name, unit, description);
 
         // Act
         var handlerCollection = new Action[] {
             () => metricsManager.IncrementCounter(name: null, delta: 1),
-            () => metricsManager.IncrementCounter(name: Guid.NewGuid().ToString(), delta: 1)
+            () => metricsManager.IncrementCounter(name: Guid.NewGuid().ToString(), delta: 1),
+            () => metricsManager.IncrementCounter(name: null, delta: 1, tags),
+            () => metricsManager.IncrementCounter(name: Guid.NewGuid().ToString(), delta: 1, tags)
         };
 
         // Assert
