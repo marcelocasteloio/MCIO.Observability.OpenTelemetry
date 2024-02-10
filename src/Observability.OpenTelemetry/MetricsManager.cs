@@ -110,18 +110,31 @@ namespace MCIO.Observability.OpenTelemetry
             _histogramDictionary.Add(name, _meter.CreateHistogram<T>(name, unit, description));
             _histogramColection.Add(createHistogramProcessResult.Output.Value);
         }
-        public void RecordHistogram<T>(string name, T value, KeyValuePair<string, object> tag)
+        public void RecordHistogram<T>(string name, T value)
             where T : struct
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
 
-            if (!_counterDictionary.ContainsKey(name))
+            if (!_histogramDictionary.ContainsKey(name))
                 throw new ArgumentOutOfRangeException(message: string.Format(HISTOGRAM_NOT_FOUND_ERROR_MESSAGE, name), paramName: nameof(name));
 
             var histogram = (System.Diagnostics.Metrics.Histogram<T>)_histogramDictionary[name];
 
-            histogram.Record(value, tag);
+            histogram.Record(value);
+        }
+        public void RecordHistogram<T>(string name, T value, KeyValuePair<string, object>[] tags)
+            where T : struct
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+
+            if (!_histogramDictionary.ContainsKey(name))
+                throw new ArgumentOutOfRangeException(message: string.Format(HISTOGRAM_NOT_FOUND_ERROR_MESSAGE, name), paramName: nameof(name));
+
+            var histogram = (System.Diagnostics.Metrics.Histogram<T>)_histogramDictionary[name];
+
+            histogram.Record(value, tags);
         }
         public IEnumerable<Histogram> GetHistogramCollection()
         {
