@@ -9,7 +9,7 @@ public class MetricsManagerTest
     {
         // Arrange
         var metricsManager = CreateMetricsManager();
-        var nameCollection = new []{
+        var nameCollection = new[]{
             Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString()
@@ -101,6 +101,27 @@ public class MetricsManagerTest
 
         // Assert
         handler.Should().NotThrow();
+    }
+    [Fact]
+    public void MetricsManager_Should_Not_Increment_Counter()
+    {
+        // Arrange
+        var metricsManager = CreateMetricsManager();
+        var name = Guid.NewGuid().ToString();
+        var unit = Guid.NewGuid().ToString();
+        var description = Guid.NewGuid().ToString();
+
+        metricsManager.CreateCounter<int>(name, unit, description);
+
+        // Act
+        var handlerCollection = new Action[] {
+            () => metricsManager.IncrementCounter(name: null, delta: 1),
+            () => metricsManager.IncrementCounter(name: Guid.NewGuid().ToString(), delta: 1)
+        };
+
+        // Assert
+        foreach (var handler in handlerCollection)
+            handler.Should().Throw<Exception>();
     }
 
     [Fact]
