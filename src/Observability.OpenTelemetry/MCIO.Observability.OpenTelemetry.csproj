@@ -20,7 +20,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="MarceloCastelo.IO.Observability.Abstractions" Version="1.1.0" />
+	  <PackageReference Include="MarceloCastelo.IO.Observability.Abstractions" Version="2.0.0" />
 	  <PackageReference Include="OpenTelemetry" Version="1.7.0" />
 	</ItemGroup>
 
